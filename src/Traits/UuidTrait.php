@@ -8,7 +8,7 @@
 
 namespace BulkImports\Traits;
 
-use BulkImports\Annotations\ExtractableAnnotation;
+use BulkImports\Annotations\ExtractableProperty;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 
@@ -24,7 +24,7 @@ trait UuidTrait
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-     * @ExtractableAnnotation(columnIndex="2", columnName="UUID")
+     * @ExtractableProperty(columnIndex="2", columnName="UUID")
      */
     private $uuid;
 

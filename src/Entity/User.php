@@ -8,7 +8,7 @@
 
 namespace BulkImports\Entity;
 
-use BulkImports\Annotations\ExtractableAnnotation;
+use BulkImports\Annotations\ExtractableProperty;
 use BulkImports\Traits\CUDTrait;
 use BulkImports\Traits\IdTrait;
 use BulkImports\Traits\UuidTrait;
@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Class user
+ * Class User
  *
  * @ORM\Entity(repositoryClass="BulkImports\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
@@ -32,7 +32,7 @@ class User
     /**
      * One Customer has One Cart.
      *
-     * @ExtractableAnnotation(columnIndex="3", columnName="Contact")
+     * @ExtractableProperty(columnIndex="3", columnName="Contact")
      * @ORM\OneToOne(targetEntity="BulkImports\Entity\Contact", mappedBy="user", cascade={"persist", "remove"})
      */
     protected $contact;

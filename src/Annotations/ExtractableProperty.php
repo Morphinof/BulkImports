@@ -12,9 +12,9 @@ use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
- * @Target("PROPERTY")
+ * @Target("ALL")
  */
-final class ExtractableAnnotation extends Annotation
+final class ExtractableProperty extends Annotation
 {
     /** @var string $columnIndex */
     public $columnIndex = 0;

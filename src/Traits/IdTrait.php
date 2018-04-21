@@ -8,7 +8,7 @@
 
 namespace BulkImports\Traits;
 
-use BulkImports\Annotations\ExtractableAnnotation;
+use BulkImports\Annotations\ExtractableProperty;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,7 +21,7 @@ trait IdTrait
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @ExtractableAnnotation(columnIndex="1", columnName="ID")
+     * @ExtractableProperty(columnIndex="1", columnName="ID")
      */
     protected $id;
 

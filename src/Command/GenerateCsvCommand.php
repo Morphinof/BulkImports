@@ -8,8 +8,10 @@
 
 namespace BulkImports\Command;
 
-use BulkImports\Annotations\ExtractableAnnotation;
+use BulkImports\Annotations\ExtractableProperty;
+use BulkImports\Entity\User;
 use Doctrine\Common\Annotations\AnnotationReader;
+use ReflectionProperty;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -118,6 +120,8 @@ class GenerateCsvCommand extends ContainerAwareCommand
      *
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @throws \ReflectionException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
@@ -134,10 +138,15 @@ class GenerateCsvCommand extends ContainerAwareCommand
 
     /**
      * @return array
+     * @throws \ReflectionException
      */
     protected function generateUsers(): array
     {
         $users = [];
+
+        $properties = $this->getExtractableProperties(User::class);
+
+        dump($properties);
 
         return $users;
     }
@@ -173,29 +182,32 @@ class GenerateCsvCommand extends ContainerAwareCommand
     /**
      * Get the extractable properties of an entity
      *
-     * @param string $class
+     * @param string $entityClassName
      *
      * @return array
-     * @throws \Exception
      * @throws \ReflectionException
      */
-    protected function getExtractableProperties(string $class): array
+    protected function getExtractableProperties(string $entityClassName): array
     {
-        $reflectionClass = new \ReflectionClass($class);
+        $columns = [];
+        $reflexionClass = new \ReflectionClass($entityClassName);
 
-        $annotation = $this->reader->getClassAnnotation($reflectionClass, ExtractableAnnotation::class);
+        $properties = $reflexionClass->getProperties(ReflectionProperty::IS_PRIVATE | ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
 
-        if (!$annotation) {
-            throw new \Exception(
-                sprintf(
-                    'Entity class %s does not have required annotation %s',
-                    $class,
-                    ExtractableAnnotation::class
-                )
+        foreach ($properties as $property) {
+            $annotation = $this->reader->getPropertyAnnotation(
+                $property,
+                ExtractableProperty::class
             );
+
+            dump($annotation);
+
+            if ($annotation !== null) {
+                $columns[$annotation->columnIndex] = $annotation->columnName;
+            }
         }
 
-        dump($annotation);
+        return $columns;
     }
 
     /**

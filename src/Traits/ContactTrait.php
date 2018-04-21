@@ -8,7 +8,7 @@
 
 namespace BulkImports\Traits;
 
-use BulkImports\Annotations\ExtractableAnnotation;
+use BulkImports\Annotations\ExtractableProperty;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -23,7 +23,7 @@ trait ContactTrait
      * @var string $gender
      *
      * @ORM\Column(type="string", length=24, nullable=true)
-     * @ExtractableAnnotation(columnIndex="4", columnName="Gender")
+     * @ExtractableProperty(columnIndex="4", columnName="Gender")
      */
     protected $gender;
 
@@ -33,7 +33,7 @@ trait ContactTrait
      * @var string $firstName
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @ExtractableAnnotation(columnIndex="5", columnName="First name")
+     * @ExtractableProperty(columnIndex="5", columnName="First name")
      */
     protected $firstName;
     /**
@@ -42,7 +42,7 @@ trait ContactTrait
      * @var string $firstName
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @ExtractableAnnotation(columnIndex="6", columnName="Last name")
+     * @ExtractableProperty(columnIndex="6", columnName="Last name")
      */
     protected $lastName;
 
@@ -56,7 +56,7 @@ trait ContactTrait
      *     message = "The email '{{ value }}' is not a valid email.",
      *     checkMX = true
      * )
-     * @ExtractableAnnotation(columnIndex="7", columnName="Email")
+     * @ExtractableProperty(columnIndex="7", columnName="Email")
      */
     protected $email;
 

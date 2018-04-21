@@ -19,3 +19,4 @@ src/Migrations/
 src/Repository/.gitignore
 tmp/
 translations/
+.idea/workspace.xml
