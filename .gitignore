@@ -5,3 +5,17 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+.idea/dataSources.local.xml
+.idea/dataSources.xml
+.idea/dataSources/
+.idea/inspectionProfiles/
+config/packages/doctrine.yaml
+config/packages/doctrine_migrations.yaml
+config/packages/prod/
+config/packages/ramsey_uuid_doctrine.yaml
+config/packages/translation.yaml
+src/Entity/.gitignore
+src/Migrations/
+src/Repository/.gitignore
+tmp/
+translations/

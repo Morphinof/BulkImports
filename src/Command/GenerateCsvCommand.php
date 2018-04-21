@@ -8,6 +8,8 @@
 
 namespace BulkImports\Command;
 
+use BulkImports\Annotations\ExtractableAnnotation;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +25,7 @@ class GenerateCsvCommand extends ContainerAwareCommand
     const DESCRIPTION = 'Generates a csv file with randoms users with a contact to import, by default will be randomized between %s and %s';
 
     const DELIMITER = ';';
-    const OUTPUT_FOLDER = __DIR__.'/../../tmp';
+    const OUTPUT_FOLDER = __DIR__ . '/../../tmp';
 
     const ARG_NUMBER_OF_USERS = 'arg-number-of-users';
     const DSC_NUMBER_OF_USERS = 'The number of users generate, max value is %s';
@@ -45,6 +47,9 @@ class GenerateCsvCommand extends ContainerAwareCommand
     /** @var OutputInterface $output */
     protected $output;
 
+    /** @var AnnotationReader $reader */
+    protected $reader;
+
     /** @var  $output */
     protected $serializer;
 
@@ -61,11 +66,14 @@ class GenerateCsvCommand extends ContainerAwareCommand
      * GreetCommand constructor.
      *
      * @param null|string $name
+     *
+     * @throws \Doctrine\Common\Annotations\AnnotationException
      */
     public function __construct(?string $name = null)
     {
         parent::__construct($name);
 
+        $this->reader     = $reader = new AnnotationReader();
         $this->serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder(self::DELIMITER)]);
     }
 
@@ -93,6 +101,19 @@ class GenerateCsvCommand extends ContainerAwareCommand
     }
 
     /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    private function init(InputInterface $input, OutputInterface $output)
+    {
+        ini_set('memory_limit', -1);
+        set_time_limit(0);
+
+        $this->input  = $input;
+        $this->output = $output;
+    }
+
+    /**
      * Execute the command
      *
      * @param InputInterface  $input
@@ -100,8 +121,7 @@ class GenerateCsvCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->input  = $input;
-        $this->output = $output;
+        $this->init($input, $output);
 
         $data = $this->generateUsers();
         $data = $this->serializer->encode($data, 'csv');
@@ -130,6 +150,52 @@ class GenerateCsvCommand extends ContainerAwareCommand
         $contact = [];
 
         return $contact;
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return array
+     * @throws \ReflectionException
+     */
+    protected function extractClassProperties(string $class): array
+    {
+        $reflectionClass = new \ReflectionClass($class);
+        $properties      = [];
+
+        foreach ($reflectionClass->getProperties() as $property) {
+            $properties[] = $property;
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Get the extractable properties of an entity
+     *
+     * @param string $class
+     *
+     * @return array
+     * @throws \Exception
+     * @throws \ReflectionException
+     */
+    protected function getExtractableProperties(string $class): array
+    {
+        $reflectionClass = new \ReflectionClass($class);
+
+        $annotation = $this->reader->getClassAnnotation($reflectionClass, ExtractableAnnotation::class);
+
+        if (!$annotation) {
+            throw new \Exception(
+                sprintf(
+                    'Entity class %s does not have required annotation %s',
+                    $class,
+                    ExtractableAnnotation::class
+                )
+            );
+        }
+
+        dump($annotation);
     }
 
     /**
